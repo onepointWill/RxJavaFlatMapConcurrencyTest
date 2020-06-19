@@ -65,13 +65,11 @@ public class Main extends AbstractVerticle {
     }
 
     private Completable finishedRequest(Integer request) {
-        System.out.println(String.format("Request finished: %d", request));
-        return Completable.fromAction(() -> {});
+        return Completable.fromAction(() -> System.out.println(String.format("Request finished: %d", request)));
     }
 
     private Completable finishedJob(String job) {
-        System.out.println(String.format("Job finished: %s", job));
-        return Completable.fromAction(() -> {});
+        return Completable.fromAction(() -> System.out.println(String.format("Job finished: %s", job)));
     }
 
     private Completable finishedJobWithError(Integer request) {
