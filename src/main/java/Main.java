@@ -15,13 +15,15 @@ public class Main extends AbstractVerticle {
         super.start();
 
         Scheduler scheduler = RxHelper.scheduler(vertx);
-        Flowable.range(1, 50_000)
+        Flowable.range(1, 5_000)
                 .observeOn(scheduler)
                 .subscribeOn(scheduler)
                 .map(i -> i * 100)
+                .map(i -> i / 100)
                 .map(i -> i + 1)
+                .map(i -> i - 1)
                 .window(80)
-                .flatMapCompletable(requests -> {
+                .concatMapCompletable(requests -> {
                     return requests.flatMapCompletable(request -> {
                         return parseRequest(request)
                                 .flatMapCompletable(data -> {
@@ -31,7 +33,6 @@ public class Main extends AbstractVerticle {
                     });
                 })
                 .subscribe(this::finishedAll);
-
     }
 
     private Flowable<String> parseRequest(int i) {
@@ -65,12 +66,12 @@ public class Main extends AbstractVerticle {
 
     private Completable finishedRequest(Integer request) {
         System.out.println(String.format("Request finished: %d", request));
-        return Completable.complete();
+        return Completable.fromAction(() -> {});
     }
 
     private Completable finishedJob(String job) {
         System.out.println(String.format("Job finished: %s", job));
-        return Completable.complete();
+        return Completable.fromAction(() -> {});
     }
 
     private Completable finishedJobWithError(Integer request) {
